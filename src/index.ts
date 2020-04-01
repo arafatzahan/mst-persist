@@ -50,11 +50,13 @@ export const persist: IArgs = (name, store, options = {}) => {
   })
 
   return storage.getItem(name)
-    .then((data: object | string) => {
-      const snapshot = !isString(data) ? data : JSON.parse(data)
-      // don't apply falsey (which will error), leave store in initial state
+    .then((data) => {
+      const snapshot = !jsonify ? data : JSON.parse(data)
       if (!snapshot) { return }
-      applySnapshot(store, snapshot)
+      applySnapshot(
+        store,
+        blacklist || whitelist ? Object.assign(store.toJSON(), snapshot) : snapshot
+      )
     })
 }
 
